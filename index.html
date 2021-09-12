@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpine-JS + Tailwind-css</title>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <link href="//unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-600">
+
+    <div class="container h-full px-5 px-10 py-12 mx-auto bg-indigo-100 max-w-7x1">
+
+        <div x-data="spaceNews()" x-init="fetchArticles()">
+            <h1 class="mb-2 text-5xl font-bold text-gray-900 sm:text-4xl">Space News</h1>
+            <h2 class="mb-2 text-xl font-medium text-gray-600">Alpine JS + Tailwind CSS Showcase</h2>
+
+            <div class="flex flex-wrap my-8">
+                <input type="text" name="keyword" x-model="keyword"
+                    class="px-4 py-2 mr-10 leading-normal bg-white border border-gray-300 rounded-lg appearance-none w-60 md:w-96 focus:outline-none focus:shadow-outline">
+                <button type="submit" @click="fetchArticles()"
+                    class="flex px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+                    :class="[ isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700' ]"
+                    :disabled="isLoading">
+                    Search
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 -m-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <template x-for="article in articles">
+
+                    <div class="p-4">
+                        <div class="flex flex-col justify-between h-full p-6 bg-white rounded-lg">
+                            <div>
+                                <img class="object-cover object-center w-full mb-6 rounded lg:h-60 xl:h-56 md:h-64 sm:h-72 xs:h-72 h-72"
+                                    :src="article.imageUrl" alt="Image Size 720x400">
+                                <h3 class="text-xs font-medium tracking-widest text-indigo-500 title-font">
+                                    Source:
+                                    <span x-text="article.newsSite"></span>
+                                </h3>
+                                <h2 class="mb-4 text-lg font-medium text-gray-900 title-font" x-text="article.title">
+                                </h2>
+                                <p x-text="article.summary" class="text-base leading-relaxed"></p>
+                            </div>
+
+                            <div class="flex flex-row justify-between mt-4 text-sm text-gray-500 width-full">
+                                <span x-text="new Date(article.updatedAt).toLocaleString()"></span>
+                                <a :href="article.url" target="_blank" class="flex gap-1 hover:underline">
+                                    Full Story
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-5" viewBox="0 0 20 20"
+                                        fill="currentColor">
+                                        <path
+                                            d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                                        <path
+                                            d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                                    </svg>
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        function spaceNews() {
+            return {
+                articles: [],
+                keyword: null,
+                isLoading: false,
+                fetchArticles() {
+                    this.isLoading = true;
+                    const query = this.keyword ? `title_contains=${this.keyword}` : '';
+                    fetch(`https://api.spaceflightnewsapi.net/v3/articles?${query}&_limit=20`)
+                        .then((res) => res.json())
+                        .then((data) => {
+                            this.isLoading = false;
+                            this.articles = data;
+                        })
+                        .catch((error) => console.log(error))
+                        .finally(() => this.isLoading = false);
+                },
+            };
+        }
+    </script>
+</body>
+
+</html>
