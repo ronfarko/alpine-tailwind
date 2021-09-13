@@ -20,7 +20,9 @@
 
             <div class="flex flex-wrap my-8">
                 <input type="text" name="keyword" x-model="keyword" placeholder="Enter a keyword"
+                    @keydown.enter="fetchArticles()"
                     class="px-4 py-2 mr-10 leading-normal bg-white border border-gray-300 rounded-lg appearance-none w-60 md:w-96 focus:outline-none focus:shadow-outline">
+
                 <button type="submit" @click="fetchArticles()"
                     class="flex px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
                     :class="[ isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700' ]"
